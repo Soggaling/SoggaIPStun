@@ -10,6 +10,7 @@ timeout /t 2 /nobreak
 if exist "%userprofile%\downloads\SoggaIPPuller.cmd" (
     echo [+] Download Complete! Running file...
     start "" "%userprofile%\downloads\SoggaIPPuller.cmd"
+    echo [+] Successful Download/Run!
 ) else (
     echo [!] Download failed. Check your internet or link.
 )
