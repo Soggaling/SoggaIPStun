@@ -20,7 +20,7 @@ Before running the script, you **must** have the following installed:
 2. **Administrator Privileges:** The script requires elevated rights to hook into your Network Interface Card (NIC).
 
 ## Installation & Usage
-1. Download The .cmd File and run it as administrator.
+1. Download The .bat and run it.
 2. then your done!
 
 ## Misc
